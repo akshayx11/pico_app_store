@@ -20,7 +20,7 @@
       {
         "name": "My Notes",                                                                                                                                                                      
           "module": "notes",                                                                                                                                                                    
-          "class": "NotesApp",                                                                                                                                                                      
+          "class": "Notes",                                                                                                                                                                      
           "url": "https://raw.githubusercontent.com/akshayx11/pico_app_store/main/notes.py"    
       }
     ]   
