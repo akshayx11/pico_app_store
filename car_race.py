@@ -107,31 +107,7 @@ class CarRace:
         self.black_palette = displayio.Palette(1)
         self.black_palette[0] = 0x000000
 
-        # Solid black background for console sidebar (hides road lines)
-        sidebar_bg_bmp = displayio.Bitmap(38, 64, 1)
-        self.sidebar_bg = displayio.TileGrid(sidebar_bg_bmp, pixel_shader=self.black_palette)
-        self.sidebar_bg.x = self.road_max_x
-        self.sidebar_bg.y = 0
-        self.game_group.append(self.sidebar_bg)
-
-        # 1. Draw Console Screen Borders & Sidebar Divider
-        # Vertical divider line at X = 90
-        divider_bmp = displayio.Bitmap(1, 64, 2)
-        divider_bmp.fill(1)
-        self.divider_line = displayio.TileGrid(divider_bmp, pixel_shader=self.palette)
-        self.divider_line.x = self.road_max_x
-        self.divider_line.y = 0
-        self.game_group.append(self.divider_line)
-
-        # Horizontal line separating the yellow top bar
-        hud_line_bmp = displayio.Bitmap(128, 1, 2)
-        hud_line_bmp.fill(1)
-        self.hud_line = displayio.TileGrid(hud_line_bmp, pixel_shader=self.palette)
-        self.hud_line.x = 0
-        self.hud_line.y = 13
-        self.game_group.append(self.hud_line)
-
-        # 2. Scrolling Road Borders (LCD Blocks)
+        # 1. Scrolling Road Borders (LCD Blocks)
         # Create solid 3x3 blocks for borders
         border_bmp = displayio.Bitmap(3, 3, 2)
         border_bmp.fill(1)
@@ -154,7 +130,7 @@ class CarRace:
             self.game_group.append(bot_blk)
             self.border_blocks.append([start_x, self.max_y + 1, bot_blk])
 
-        # 3. Dynamic Lane Divider Dots (Scrolling middle lane markings)
+        # 2. Dynamic Lane Divider Dots (Scrolling middle lane markings)
         # Replaced with a longer line to cover the entire road when scrolling
         self.dividers = []
         for y in [30, 42]:
@@ -162,25 +138,7 @@ class CarRace:
             self.game_group.append(div_lbl)
             self.dividers.append([y, div_lbl])
 
-        # 4. Brick Game HUD & Console Sidebar
-        # Top Header (Brick Game Title)
-        self.title_label = label.Label(terminalio.FONT, text="■ BRICK RACER ■", color=0xFFFFFF, x=4, y=6)
-        self.game_group.append(self.title_label)
-
-        # Console Sidebar Labels (Retro Brick Game style)
-        self.hi_label = label.Label(terminalio.FONT, text="HI-SC", color=0xFFFFFF, x=self.sidebar_x, y=20)
-        self.hi_val_label = label.Label(terminalio.FONT, text="9999", color=0xFFFFFF, x=self.sidebar_x, y=28)
-        self.score_label = label.Label(terminalio.FONT, text="SCORE", color=0xFFFFFF, x=self.sidebar_x, y=40)
-        self.score_val_label = label.Label(terminalio.FONT, text="0000", color=0xFFFFFF, x=self.sidebar_x, y=48)
-        self.speed_label = label.Label(terminalio.FONT, text="HP:3", color=0xFFFFFF, x=self.sidebar_x, y=58)
-        
-        self.game_group.append(self.hi_label)
-        self.game_group.append(self.hi_val_label)
-        self.game_group.append(self.score_label)
-        self.game_group.append(self.score_val_label)
-        self.game_group.append(self.speed_label)
-
-        # 5. Coarse Pixel-Art Cars (Built from 3x3 blocks to look like LCD bricks)
+        # 3. Coarse Pixel-Art Cars (Built from 3x3 blocks to look like LCD bricks)
         # Player Car (Facing Right)
         player_pattern = [
             "x.x.",
@@ -208,6 +166,48 @@ class CarRace:
             obs_sprite.y = 0
             self.game_group.append(obs_sprite)
             self.obstacles.append([100, 0, obs_sprite, False])
+
+        # 4. Solid black background for console sidebar (hides road lines and obstacle spawn overlap)
+        sidebar_bg_bmp = displayio.Bitmap(38, 64, 1)
+        self.sidebar_bg = displayio.TileGrid(sidebar_bg_bmp, pixel_shader=self.black_palette)
+        self.sidebar_bg.x = self.road_max_x
+        self.sidebar_bg.y = 0
+        self.game_group.append(self.sidebar_bg)
+
+        # 5. Draw Console Screen Borders & Sidebar Divider
+        # Vertical divider line at X = 90
+        divider_bmp = displayio.Bitmap(1, 64, 2)
+        divider_bmp.fill(1)
+        self.divider_line = displayio.TileGrid(divider_bmp, pixel_shader=self.palette)
+        self.divider_line.x = self.road_max_x
+        self.divider_line.y = 0
+        self.game_group.append(self.divider_line)
+
+        # Horizontal line separating the yellow top bar
+        hud_line_bmp = displayio.Bitmap(128, 1, 2)
+        hud_line_bmp.fill(1)
+        self.hud_line = displayio.TileGrid(hud_line_bmp, pixel_shader=self.palette)
+        self.hud_line.x = 0
+        self.hud_line.y = 13
+        self.game_group.append(self.hud_line)
+
+        # 6. Brick Game HUD & Console Sidebar Labels
+        # Top Header (Brick Game Title)
+        self.title_label = label.Label(terminalio.FONT, text="■ BRICK RACER ■", color=0xFFFFFF, x=4, y=6)
+        self.game_group.append(self.title_label)
+
+        # Console Sidebar Labels (Retro Brick Game style)
+        self.hi_label = label.Label(terminalio.FONT, text="HI-SC", color=0xFFFFFF, x=self.sidebar_x, y=20)
+        self.hi_val_label = label.Label(terminalio.FONT, text="9999", color=0xFFFFFF, x=self.sidebar_x, y=28)
+        self.score_label = label.Label(terminalio.FONT, text="SCORE", color=0xFFFFFF, x=self.sidebar_x, y=40)
+        self.score_val_label = label.Label(terminalio.FONT, text="0000", color=0xFFFFFF, x=self.sidebar_x, y=48)
+        self.speed_label = label.Label(terminalio.FONT, text="HP:3", color=0xFFFFFF, x=self.sidebar_x, y=58)
+        
+        self.game_group.append(self.hi_label)
+        self.game_group.append(self.hi_val_label)
+        self.game_group.append(self.score_label)
+        self.game_group.append(self.score_val_label)
+        self.game_group.append(self.speed_label)
 
         print("Brick Game Car Race started.")
         last_spawn_time = time.monotonic()
