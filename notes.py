@@ -5,7 +5,7 @@ import displayio
 import terminalio
 from adafruit_display_text import label
 
-class NotesApp:
+class Notes:
     def __init__(self, sc, mv, keypad):
         self.sc = sc
         self.mv = mv
