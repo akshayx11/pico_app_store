@@ -103,6 +103,17 @@ class CarRace:
         self.palette[1] = 0xFFFFFF
         self.palette.make_transparent(0)
 
+        # Opaque black palette for sidebar background to hide overflowing road lines
+        self.black_palette = displayio.Palette(1)
+        self.black_palette[0] = 0x000000
+
+        # Solid black background for console sidebar (hides road lines)
+        sidebar_bg_bmp = displayio.Bitmap(38, 64, 1)
+        self.sidebar_bg = displayio.TileGrid(sidebar_bg_bmp, pixel_shader=self.black_palette)
+        self.sidebar_bg.x = self.road_max_x
+        self.sidebar_bg.y = 0
+        self.game_group.append(self.sidebar_bg)
+
         # 1. Draw Console Screen Borders & Sidebar Divider
         # Vertical divider line at X = 90
         divider_bmp = displayio.Bitmap(1, 64, 2)
@@ -144,9 +155,10 @@ class CarRace:
             self.border_blocks.append([start_x, self.max_y + 1, bot_blk])
 
         # 3. Dynamic Lane Divider Dots (Scrolling middle lane markings)
+        # Replaced with a longer line to cover the entire road when scrolling
         self.dividers = []
         for y in [30, 42]:
-            div_lbl = label.Label(terminalio.FONT, text="- - - - -", color=0xFFFFFF, x=0, y=y)
+            div_lbl = label.Label(terminalio.FONT, text="- - - - - - - - - - - - - - - -", color=0xFFFFFF, x=0, y=y)
             self.game_group.append(div_lbl)
             self.dividers.append([y, div_lbl])
 
@@ -227,6 +239,11 @@ class CarRace:
 
             time.sleep(0.05)
 
+        # Clean up game screen and restore system screen
+        while len(self.game_group) > 0:
+            self.game_group.pop()
+        self.oled.root_group = self.splash
+
     def load_highscore(self):
         try:
             with open("/sd/features/installed_apps.json", "r") as f:
@@ -264,19 +281,19 @@ class CarRace:
                     break
 
     def animate_borders(self):
-        self.divider_offset = (self.divider_offset - int(self.speed)) % 18
+        self.divider_offset = (self.divider_offset + self.speed) % 180
         
         # Scroll the border blocks left
         for blk in self.border_blocks:
             x_offset, y, sprite = blk
             # Calculate new X wrapped inside the road area (0 to 90)
-            new_x = (x_offset + self.divider_offset) % 90
+            new_x = (x_offset - int(self.divider_offset)) % 90
             sprite.x = int(new_x)
             
         # Scroll the middle lane divider dotted lines
         for div in self.dividers:
             y, lbl = div
-            lbl.x = (self.divider_offset % 24) - 24
+            lbl.x = - (int(self.divider_offset) % 12)
 
     def update_obstacles(self):
         for obs in self.obstacles:
@@ -308,9 +325,10 @@ class CarRace:
                         self.hi_val_label.text = f"{self.hi_score:04d}"
                         self.save_highscore()
                         
-                    # Slightly increase speed
-                    if self.score % 5 == 0 and self.speed < 5.0:
-                        self.speed += 0.4
+                    # Increase speed every 20 cars passed
+                    if self.score > 0 and self.score % 20 == 0 and self.speed < 5.5:
+                        self.speed += 0.5
+                        beep(1000, 0.1)
 
     def reset_obstacle(self, obs):
         obs[0] = 100
@@ -338,6 +356,17 @@ class CarRace:
     def trigger_game_over(self):
         self.game_over = True
         beep(100, 0.5)
+        # Hide player car
+        self.player_sprite.x = -30
+        # Hide all obstacles
+        for obs in self.obstacles:
+            self.reset_obstacle(obs)
+        # Hide lane dividers
+        for div in self.dividers:
+            div[1].x = -150
+        # Hide border blocks
+        for blk in self.border_blocks:
+            blk[2].x = -30
         # Show Game Over overlay (fits in the road area)
         self.game_over_label = label.Label(terminalio.FONT, text="GAME OVER\nPress [A]\nto Restart", color=0xFFFFFF, x=15, y=self.min_y + 12)
         self.game_group.append(self.game_over_label)
@@ -349,6 +378,8 @@ class CarRace:
             self.speed = 2.0
             self.current_lane = 1
             self.player_y = self.lanes[self.current_lane]
+            # Restore player car position
+            self.player_sprite.x = self.player_x
             self.player_sprite.y = self.player_y
             self.score_val_label.text = "0000"
             self.speed_label.text = "HP:3"
@@ -366,7 +397,4 @@ class CarRace:
 
     def exit_game(self):
         self.is_active = False
-        displayio.release_displays()
-        self.oled.root_group = self.splash
-        self.mv.show_screen("Car Race stopped", "Games", 5, 25, r_menu="")
-        time.sleep(0.2)
+        time.sleep(0.1)
