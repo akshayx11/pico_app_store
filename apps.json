@@ -1,0 +1,14 @@
+ [                                                                                                                                                                                          
+      {                                                                                                                                                                                        
+        "name": "Hello World",                                                                                                                                                                 
+        "module": "hello",                                                                                                                                                                     
+        "class": "HelloWorld",                                                                                                                                                                 
+        "url": "https://raw.githubusercontent.com/akshayx11/pico_app_store/main/hello.py"                                                                                                      
+      },                                                                                                                                                                                       
+      {                                                                                                                                                                                        
+        "name": "Dice Roller",                                                                                                                                                                 
+        "module": "dice",                                                                                                                                                                      
+        "class": "DiceRoller",                                                                                                                                                                 
+        "url": "https://raw.githubusercontent.com/akshayx11/pico_app_store/main/dice.py"                                                                                                       
+      }                                                                                                                                                                                        
+    ]   
