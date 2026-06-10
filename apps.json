@@ -10,5 +10,11 @@
         "module": "dice",                                                                                                                                                                      
         "class": "DiceRoller",                                                                                                                                                                 
         "url": "https://raw.githubusercontent.com/akshayx11/pico_app_store/main/dice.py"                                                                                                       
-      }                                                                                                                                                                                        
+      },
+      {
+        "name": "Car Race",                                                                                                                                                                      
+          "module": "car_race",                                                                                                                                                                    
+          "class": "CarRace",                                                                                                                                                                      
+          "url": "https://raw.githubusercontent.com/akshayx11/pico_app_store/main/car_race.py"    
+      }
     ]   
