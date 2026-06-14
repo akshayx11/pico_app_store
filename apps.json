@@ -32,6 +32,7 @@
       {                                                                                                                                                                                                                                       
         "name": "Password & 2FA",                                                                                                                                                                                                             
         "module": "totp",                                                                                                                                                                                                                     
-        "class": "TOTPApp"                                                                                                                                                                                                                    
+        "class": "TOTPApp",
+       "url": "https://raw.githubusercontent.com/akshayx11/pico_app_store/main/totp.py"     
       } 
     ]   
