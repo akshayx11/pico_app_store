@@ -231,20 +231,24 @@ class WaterReminder:
 
     def draw_screen(self, first_time=False):
         status_str = "ON" if self.enabled else "OFF"
-        time_left_str = get_time_remaining_str() if self.enabled else "Disabled"
+        time_left_str = get_time_remaining_str() if self.enabled else "Off"
         
         opt0 = f"{'> ' if self.menu_count == 0 else '  '}Status: {status_str}"
         opt1 = f"{'> ' if self.menu_count == 1 else '  '}Interval: {self.interval}m"
         
-        content = f"{opt0}\n{opt1}\nNext: {time_left_str}"
+        content = f"{opt0}\n{opt1}"
         
         if first_time:
-            self.mv.show_screen(content, "Water Reminder", 5, 22, l_menu="Select", r_menu="Back")
+            self.mv.show_screen(content, "Water", 5, 22, l_menu="Select", r_menu="Back", header_right=time_left_str)
             self.last_drawn_content = content
+            self.last_drawn_time = time_left_str
         else:
             if content != getattr(self, "last_drawn_content", ""):
                 self.mv.update_content(content)
                 self.last_drawn_content = content
+            if time_left_str != getattr(self, "last_drawn_time", ""):
+                self.mv.update_header_right(time_left_str)
+                self.last_drawn_time = time_left_str
 
     def scroll_up(self):
         self.menu_count = (self.menu_count - 1) % 2
@@ -321,4 +325,3 @@ class WaterReminder:
     def handle_back(self):
         self.is_active = False
         time.sleep(0.2)
-
