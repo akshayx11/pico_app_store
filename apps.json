@@ -22,5 +22,11 @@
           "module": "notes",                                                                                                                                                                    
           "class": "Notes",                                                                                                                                                                      
           "url": "https://raw.githubusercontent.com/akshayx11/pico_app_store/main/notes.py"    
-      }
+      },
+      {                                                                                                                                                                                                                                         
+         "name": "Water Reminder",                                                                                                                                                                                                               
+         "module": "water_reminder",                                                                                                                                                                                                             
+         "class": "WaterReminder",                                                                                                                                                                                                               
+         "url": "https://raw.githubusercontent.com/akshayx11/pico_app_store/main/water_reminder.py"                                                                                                                                              
+       } 
     ]   
