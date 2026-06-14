@@ -214,7 +214,7 @@ class WaterReminder:
         self.is_active = True
         self.menu_count = 0
         self.setup_keypad()
-        self.draw_screen()
+        self.draw_screen(first_time=True)
         
         while self.is_active:
             self.keypad.process_keypress(True)
@@ -229,7 +229,7 @@ class WaterReminder:
         self.keypad.key_functions["C"] = self.scroll_down
         self.keypad.key_functions["D"] = self.handle_back
 
-    def draw_screen(self):
+    def draw_screen(self, first_time=False):
         status_str = "ON" if self.enabled else "OFF"
         time_left_str = get_time_remaining_str() if self.enabled else "Disabled"
         
@@ -237,7 +237,14 @@ class WaterReminder:
         opt1 = f"{'> ' if self.menu_count == 1 else '  '}Interval: {self.interval}m"
         
         content = f"{opt0}\n{opt1}\nNext: {time_left_str}"
-        self.mv.show_screen(content, "Water Reminder", 5, 22, l_menu="Select", r_menu="Back")
+        
+        if first_time:
+            self.mv.show_screen(content, "Water Reminder", 5, 22, l_menu="Select", r_menu="Back")
+            self.last_drawn_content = content
+        else:
+            if content != getattr(self, "last_drawn_content", ""):
+                self.mv.update_content(content)
+                self.last_drawn_content = content
 
     def scroll_up(self):
         self.menu_count = (self.menu_count - 1) % 2
@@ -309,8 +316,9 @@ class WaterReminder:
 
         # Restore normal keypad settings
         self.setup_keypad()
-        self.draw_screen()
+        self.draw_screen(first_time=True)
 
     def handle_back(self):
         self.is_active = False
         time.sleep(0.2)
+
